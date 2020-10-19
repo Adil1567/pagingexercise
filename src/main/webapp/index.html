@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>pagingexercise361</title>
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/lodash.min.js"></script>
+
+<script type="text/javascript">
+var app = {
+        items : [],
+        nextpage : 0,
+        prevpage : 2,
+    count:0
+};
+
+function updateList() {
+    //var count=0;
+    $("#my-list").html("");
+    $("#my-list").append("<li>" + "ADIL" + "</li>");
+    app.items.forEach(function (e) {
+        $("#my-list").append("<li>" + e + "</li>");
+        //$("#my-list").append("<li>" + e.count + "</li>");
+    });
+}
+
+function getListItems(p) {
+    $.ajax({
+        url : 'services/items?page='+p,
+        dataType : 'json',
+        success : function(r) {
+            app.items = r.list;
+            app.nextpage=r.next;
+            app.prevpage=r.prev;
+
+            if(app.count<"1"){
+               // app.count===-1;
+                $("#prev-button").prop('disabled',true);
+            }else{
+                $("#prev-button").prop('disabled',false);
+            }
+            if(app.count>"8"){
+                $("#next-button").prop('disabled',true);
+            }else{
+                $("#next-button").prop('disabled',false);
+            }
+
+            updateList();
+        }
+    });
+}
+function getList() {
+    let page=app.prevpage
+    $.ajax({
+        url : 'services/items?page='+  app.prevpage,
+        dataType : 'json',
+        //type:'GET',
+      //  data: ({x:app.prevpage}),
+        success : function(r) {
+            app.items = r.list;
+            app.prevpage=r.prevpage;
+            app.nextpage=r.nextpage;
+            updateList();
+            //console.log(r);
+        }
+    });
+}
+
+function sendListItem() {
+    var s = $("#texttosend").val();
+    
+    $.post("todo", { texttosend: s}, function() {
+        getListItems();
+    });
+}
+
+$(document).ready(function () { 
+    getListItems(app.count);
+    //console.log("RETURN");
+    $("#send-item").on('click', function () {
+       // console.log("RETURN");
+        sendListItem();
+    });
+
+    $("#prev-button").on('click', function () {
+       // let page=app.prevpage;
+        console.log("ASSS");
+        //getList(app.count);
+        // if(app.count==='-2'){
+        //     console.log("ADIIII")
+        //     app.count==='-1';
+        // }
+        // app.count=app.count-1;
+        if(app.count<'0'){
+            console.log("ADIIII");
+            //app.count=app.count+2;
+        }else{
+            app.count=app.count-1;
+        }
+        console.log(app.count);
+        getListItems(app.count);
+        //sendListItem();
+        //getListItems();
+    });
+    $("#next-button").on('click', function () {
+        // let page=app.prevpage;
+        console.log("SAAA");
+        //getList(app.count);
+        //app.count=app.count+1;
+        // if(app.count==="100"){
+        //     app.count==="99";
+        // }
+        if(app.count>'9'){
+            console.log("ADIIII");
+            //app.count=app.count+2;
+        }else{
+            app.count=app.count+1;
+        }
+        console.log(app.count)
+        getListItems(app.count);
+        //sendListItem();
+        //getListItems();
+    });
+
+});
+</script>
+</head>
+<body>
+<h2>Paging Application</h2>
+
+
+<ul id="my-list"></ul>
+
+
+<br>
+<button id="prev-button">Previous</button>
+<button id="next-button">Next</button>
+</body>
+</html>
